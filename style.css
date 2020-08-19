@@ -1,0 +1,46 @@
+body,
+html {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.black {
+    background-color: black;
+}
+
+.white {
+    background-color: #fff;
+}
+
+.apple {
+    background-color: crimson;
+}
+
+.snake {
+    background-color: darkgreen;
+}
+
+.box {
+    border-collapse: collapse;
+}
+
+#plansza {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid black;
+    width: 90vh;
+}
