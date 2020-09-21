@@ -1,10 +1,20 @@
 //TODO: zoptymalizować renderowanie planszy (oddzielić generowanie od zmiany klas)
 
 let planszaElement = document.querySelector("#plansza")
+let h1 = document.querySelector("h1")
+let score = document.querySelector("#score")
 
 let player = {
     positionX: 7,
-    positionY: 7
+    positionY: 7,
+    movDirectionX: 0,
+    movDirectionY: 0,
+    score: 0
+}
+
+let apple = {
+    positionX: 0,
+    positionY: 0
 }
 
 let planszaBin = [
@@ -27,18 +37,29 @@ let planszaBin = [
 ]
 
 renderPlansza()
+updatePlayer()
 let time = setInterval(renderPlansza, 100)
+let playerTick = setInterval(updatePlayer, 1000)
 newApple()
 
 window.addEventListener('keydown', e => {
     if (e.key === 'a') {
-        movePlayer(-1, 0)
-    } else if (e.key === 'd')
-        movePlayer(1, 0)
-    else if (e.key === 'w')
-        movePlayer(0, -1)
-    else if (e.key === 's')
-        movePlayer(0, 1)
+        player.movDirectionX = -1
+        player.movDirectionY = 0
+    } else if (e.key === 'd'){
+        player.movDirectionX = 1
+        player.movDirectionY = 0
+    }
+    else if (e.key === 'w'){
+        player.movDirectionX = 0
+        player.movDirectionY = -1
+    }
+    else if (e.key === 's'){
+        player.movDirectionX = 0
+        player.movDirectionY = 1
+    }
+    clearInterval(playerTick)
+    playerTick = setInterval(updatePlayer, 1000)
     updatePlayer()
 })
 
@@ -47,25 +68,20 @@ window.addEventListener("resize", e => {
 })
 
 function newApple() {
-    let randX = Math.floor(Math.random() * 14) + 1
-    let randY = Math.floor(Math.random() * 14) + 1
-    planszaBin[randY][randX] = 2
-}
-
-function movePlayer(x, y) {
-    planszaBin[player.positionY][player.positionX] = 0
-    player.positionY += y
-    player.positionX += x
-    console.log(player)
+    apple.positionX = Math.floor(Math.random() * 14) + 1
+    apple.positionY = Math.floor(Math.random() * 14) + 1
+    planszaBin[apple.positionY][apple.positionX] = 2
 }
 
 function updatePlayer() {
+    planszaBin[player.positionY][player.positionX] = 0
+    player.positionY += player.movDirectionY
+    player.positionX += player.movDirectionX
     planszaBin[player.positionY][player.positionX] = 3
 }
 
 function renderPlansza() {
     planszaElement.innerHTML = ''
-    updatePlayer()
     for (let i = 0; i < 16; i++) {
         for (let j = 0; j < 16; j++) {
             let box = document.createElement('div')
@@ -81,7 +97,14 @@ function renderPlansza() {
             planszaElement.appendChild(box)
         }
     }
+    if(player.positionX === apple.positionX && player.positionY === apple.positionY){
+        newApple()
+        player.score += 1        
+    }
+    if(player.positionX === 15 || player.positionX === 0 || player.positionY === 15 || player.positionY === 0)
+        gameOver()
     resizeBoxes()
+    score.innerHTML = player.score
 }
 
 
@@ -94,4 +117,11 @@ function resizeBoxes() {
         box.style.width = dimensionW + "px"
         box.style.height = dimensionW + "px"
     })
+}
+
+function gameOver(){
+    clearInterval(playerTick)
+    clearInterval(time)
+    window.removeEventListener("keydown", function(){}, true)
+    h1.innerHTML = "Przegrałeś!"
 }
