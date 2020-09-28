@@ -12,6 +12,11 @@ let player = {
     score: 0
 }
 
+let defaultTailSize = 0;
+let tailSize = defaultTailSize;
+
+let snakeTrail = []
+
 let apple = {
     positionX: 0,
     positionY: 0
@@ -73,11 +78,16 @@ function newApple() {
     planszaBin[apple.positionY][apple.positionX] = 2
 }
 
-function updatePlayer() {
-    planszaBin[player.positionY][player.positionX] = 0
+function updatePlayer(){
     player.positionY += player.movDirectionY
     player.positionX += player.movDirectionX
+    if(snakeTrail.length > player.score){
+        let last = snakeTrail.shift()
+        planszaBin[last.y][last.x] = 0
+    }
+    snakeTrail.push({ x: player.positionX, y: player.positionY });
     planszaBin[player.positionY][player.positionX] = 3
+    console.log(planszaBin, snakeTrail)
 }
 
 function renderPlansza() {
@@ -97,14 +107,21 @@ function renderPlansza() {
             planszaElement.appendChild(box)
         }
     }
+
     if(player.positionX === apple.positionX && player.positionY === apple.positionY){
         newApple()
-        player.score += 1        
+        tailSize++;
+        player.score += 1       
     }
     if(player.positionX === 15 || player.positionX === 0 || player.positionY === 15 || player.positionY === 0)
         gameOver()
+    for(let i = 1; i < snakeTrail.length; i++){
+        if(snakeTrail[i].x === player.positionX && snakeTrail[i].y === player.positionY)
+            gameOver()
+    }
     resizeBoxes()
     score.innerHTML = player.score
+    
 }
 
 
